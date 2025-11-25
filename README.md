@@ -24,9 +24,13 @@ cd <YOUR_PROJECT_NAME>
 # 3. Install dependencies
 npm i
 
-# 4. Start the development server
+# 4. Start the development servers
+
+# Start the frontend (Vite)
 npm run dev
-```
+
+# In a separate terminal: start the backend (Express)
+npm run server
 
 ## Technologies Used
 
