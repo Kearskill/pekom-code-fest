@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ActivityCard } from "@/components/ActivityCard";
 import { CategoryChip } from "@/components/CategoryChip";
 import { Sparkles } from "lucide-react";
@@ -70,6 +70,12 @@ const mockActivities = [
 ];
 
 const Home = () => {
+  useEffect(() => {
+    fetch("/api/jamai")
+      .then((res) => res.json())
+      .then((data) => console.log("Backend response:", data))
+      .catch((err) => console.error("Backend error:", err));
+  }, []);
   const [selectedCategory, setSelectedCategory] = useState("All");
 
   const filteredActivities =
