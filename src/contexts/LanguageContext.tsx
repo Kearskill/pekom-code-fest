@@ -49,6 +49,7 @@ const translations: Record<string, Record<Language, string>> = {
   'common.duration': { en: 'Duration', my: 'Tempoh' },
   'common.hours': { en: 'hours', my: 'jam' },
   'common.rating': { en: 'Rating', my: 'Penilaian' },
+  'common.forYou': { en: 'For You', my: 'Untuk Anda' },
 
     // Profile Page
   'profile.title': { en: 'Profile', my: 'Profil' },
