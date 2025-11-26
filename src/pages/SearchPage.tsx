@@ -4,8 +4,9 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ActivityCard } from "@/components/ActivityCard";
 import { CategoryChip } from "@/components/CategoryChip";
+import { useLanguage } from "@/contexts/LanguageContext"; // import your hook
 
-const categories = ["All", "Food", "Activities", "Nightlife", "Nature", "Shopping"];
+const categoriesKeys = ["all", "food", "activities", "nightlife", "nature", "shopping"];
 
 const mockResults = [
   {
@@ -41,8 +42,9 @@ const mockResults = [
 ];
 
 const SearchPage = () => {
+  const { t } = useLanguage(); // use translation
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [selectedCategory, setSelectedCategory] = useState("all");
 
   const filteredResults = mockResults.filter((activity) => {
     const matchesSearch =
@@ -50,7 +52,7 @@ const SearchPage = () => {
       activity.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       activity.location.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory =
-      selectedCategory === "All" || activity.category === selectedCategory;
+      selectedCategory === "all" || activity.category.toLowerCase() === selectedCategory;
     return matchesSearch && matchesCategory;
   });
 
@@ -59,14 +61,14 @@ const SearchPage = () => {
       {/* Header */}
       <header className="sticky top-0 z-40 bg-background border-b border-border">
         <div className="max-w-screen-sm mx-auto px-4 py-4">
-          <h1 className="text-2xl font-bold text-foreground mb-4">Search</h1>
+          <h1 className="text-2xl font-bold text-foreground mb-4">{t("search.title")}</h1>
           
           {/* Search Bar */}
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
             <Input
               type="search"
-              placeholder="Search places, food, activities..."
+              placeholder={t("search.placeholder")}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10 pr-10 h-12 rounded-full bg-secondary border-transparent focus:border-primary"
@@ -84,12 +86,12 @@ const SearchPage = () => {
           {/* Filters */}
           <div className="flex items-center gap-2 mt-4">
             <div className="flex-1 flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-              {categories.map((category) => (
+              {categoriesKeys.map((key) => (
                 <CategoryChip
-                  key={category}
-                  label={category}
-                  active={selectedCategory === category}
-                  onClick={() => setSelectedCategory(category)}
+                  key={key}
+                  label={t(`category.${key}`)}
+                  active={selectedCategory === key}
+                  onClick={() => setSelectedCategory(key)}
                 />
               ))}
             </div>
@@ -104,7 +106,7 @@ const SearchPage = () => {
       <div className="max-w-screen-sm mx-auto px-4 py-6">
         {searchQuery && (
           <p className="text-sm text-muted-foreground mb-4">
-            {filteredResults.length} results for "{searchQuery}"
+            {filteredResults.length} {t("search.resultsFor")} "{searchQuery}"
           </p>
         )}
         
@@ -115,9 +117,9 @@ const SearchPage = () => {
             ))
           ) : (
             <div className="text-center py-12">
-              <p className="text-muted-foreground">No results found</p>
+              <p className="text-muted-foreground">{t("search.noResults")}</p>
               <p className="text-sm text-muted-foreground mt-1">
-                Try adjusting your search or filters
+                {t("search.tryAdjust")}
               </p>
             </div>
           )}

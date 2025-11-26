@@ -2,10 +2,12 @@ import { useState } from "react";
 import { ActivityCard } from "@/components/ActivityCard";
 import { CategoryChip } from "@/components/CategoryChip";
 import { Sparkles } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
+// Categories list
 const categories = ["All", "Food", "Activities", "Nightlife", "Nature", "Shopping"];
 
-// Mock data - will be replaced with real data from backend
+// Mock data - content stays the same
 const mockActivities = [
   {
     id: "1",
@@ -70,6 +72,7 @@ const mockActivities = [
 ];
 
 const Home = () => {
+  const { t } = useLanguage();
   const [selectedCategory, setSelectedCategory] = useState("All");
 
   const filteredActivities =
@@ -84,11 +87,9 @@ const Home = () => {
         <div className="max-w-screen-sm mx-auto px-4 py-4">
           <div className="flex items-center gap-2">
             <Sparkles className="h-6 w-6 text-primary" />
-            <h1 className="text-2xl font-bold text-foreground">Discover KV</h1>
+            <h1 className="text-2xl font-bold text-foreground">{t("header.title")}</h1>
           </div>
-          <p className="text-sm text-muted-foreground mt-1">
-            Your personalized Klang Valley guide
-          </p>
+          <p className="text-sm text-muted-foreground mt-1">{t("header.subtitle")}</p>
         </div>
       </header>
 
@@ -96,21 +97,27 @@ const Home = () => {
         {/* Categories */}
         <div className="mb-6">
           <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-            {categories.map((category) => (
-              <CategoryChip
-                key={category}
-                label={category}
-                active={selectedCategory === category}
-                onClick={() => setSelectedCategory(category)}
-              />
-            ))}
+            {categories.map((category) => {
+              const key =
+                category === "All" ? "common.all" : `category.${category.toLowerCase()}`;
+              return (
+                <CategoryChip
+                  key={category}
+                  label={t(key)}
+                  active={selectedCategory === category}
+                  onClick={() => setSelectedCategory(category)}
+                />
+              );
+            })}
           </div>
         </div>
 
         {/* Activity Grid */}
         <div className="space-y-4">
           <h2 className="text-lg font-semibold text-foreground">
-            {selectedCategory === "All" ? "For You" : selectedCategory}
+            {selectedCategory === "All"
+              ? t("common.forYou")
+              : t(`category.${selectedCategory.toLowerCase()}`)}
           </h2>
           <div className="grid gap-4">
             {filteredActivities.map((activity) => (

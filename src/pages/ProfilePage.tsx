@@ -2,15 +2,18 @@ import { MapPin, Heart, Clock, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const ProfilePage = () => {
+  const { t } = useLanguage();
+
   return (
     <div className="min-h-screen bg-background pb-20">
       {/* Header */}
       <header className="sticky top-0 z-40 bg-background border-b border-border">
         <div className="max-w-screen-sm mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold text-foreground">Profile</h1>
+            <h1 className="text-2xl font-bold text-foreground">{t("profile.title")}</h1>
             <Button variant="ghost" size="icon">
               <Settings className="h-5 w-5" />
             </Button>
@@ -39,26 +42,26 @@ const ProfilePage = () => {
           <Card>
             <CardContent className="p-4 text-center">
               <div className="text-2xl font-bold text-foreground mb-1">24</div>
-              <div className="text-xs text-muted-foreground">Visited</div>
+              <div className="text-xs text-muted-foreground">{t("profile.visited")}</div>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4 text-center">
               <div className="text-2xl font-bold text-foreground mb-1">12</div>
-              <div className="text-xs text-muted-foreground">Favorites</div>
+              <div className="text-xs text-muted-foreground">{t("profile.favorites")}</div>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4 text-center">
               <div className="text-2xl font-bold text-foreground mb-1">8</div>
-              <div className="text-xs text-muted-foreground">Reviews</div>
+              <div className="text-xs text-muted-foreground">{t("profile.reviews")}</div>
             </CardContent>
           </Card>
         </div>
 
         {/* Preferences */}
         <div className="mb-6">
-          <h3 className="text-lg font-semibold text-foreground mb-3">Your Preferences</h3>
+          <h3 className="text-lg font-semibold text-foreground mb-3">{t("profile.preferences")}</h3>
           <Card>
             <CardContent className="p-4 space-y-4">
               <div className="flex items-center justify-between">
@@ -67,7 +70,7 @@ const ProfilePage = () => {
                     <Heart className="h-5 w-5 text-primary" />
                   </div>
                   <div>
-                    <div className="text-sm font-medium text-foreground">Favorite Categories</div>
+                    <div className="text-sm font-medium text-foreground">{t("profile.favoriteCategories")}</div>
                     <div className="text-xs text-muted-foreground">Food, Nature, Activities</div>
                   </div>
                 </div>
@@ -79,7 +82,7 @@ const ProfilePage = () => {
                     <Clock className="h-5 w-5 text-primary" />
                   </div>
                   <div>
-                    <div className="text-sm font-medium text-foreground">Preferred Time</div>
+                    <div className="text-sm font-medium text-foreground">{t("profile.preferredTime")}</div>
                     <div className="text-xs text-muted-foreground">Weekends, Evenings</div>
                   </div>
                 </div>
@@ -91,7 +94,7 @@ const ProfilePage = () => {
                     <span className="text-lg">💰</span>
                   </div>
                   <div>
-                    <div className="text-sm font-medium text-foreground">Budget Range</div>
+                    <div className="text-sm font-medium text-foreground">{t("profile.budgetRange")}</div>
                     <div className="text-xs text-muted-foreground">RM 20-100 per activity</div>
                   </div>
                 </div>
@@ -102,7 +105,7 @@ const ProfilePage = () => {
 
         {/* Recent Activity */}
         <div>
-          <h3 className="text-lg font-semibold text-foreground mb-3">Recent Activity</h3>
+          <h3 className="text-lg font-semibold text-foreground mb-3">{t("profile.recentActivity")}</h3>
           <Card>
             <CardContent className="p-4">
               <div className="space-y-3">
