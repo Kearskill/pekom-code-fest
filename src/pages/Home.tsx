@@ -1,130 +1,40 @@
-import { useState } from "react";
-import { ActivityCard } from "@/components/ActivityCard";
-import { CategoryChip } from "@/components/CategoryChip";
+import { CategoryRow } from "@/components/CategoryRow";
 import { Sparkles } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
-
-// Categories list
-const categories = ["All", "Food", "Activities", "Nightlife", "Nature", "Shopping"];
-
-// Mock data - content stays the same
-const mockActivities = [
-  {
-    id: "1",
-    title: "Nasi Lemak at Village Park",
-    category: "Food",
-    location: "Damansara Utama, Petaling Jaya",
-    image: "https://images.unsplash.com/photo-1588137378633-dea1336ce1e2?w=800&auto=format&fit=crop",
-    price: "8-15",
-    duration: "30 min",
-    rating: 4.8,
-  },
-  {
-    id: "2",
-    title: "KL Tower Observation Deck",
-    category: "Activities",
-    location: "Kuala Lumpur City Centre",
-    image: "https://images.unsplash.com/photo-1508062878650-88b52897f298?w=800&auto=format&fit=crop",
-    price: "52",
-    duration: "2 hrs",
-    rating: 4.6,
-  },
-  {
-    id: "3",
-    title: "Batu Caves Temple",
-    category: "Nature",
-    location: "Batu Caves, Selangor",
-    image: "https://images.unsplash.com/photo-1596422846543-75c6fc197f07?w=800&auto=format&fit=crop",
-    price: "Free",
-    duration: "1-2 hrs",
-    rating: 4.7,
-  },
-  {
-    id: "4",
-    title: "Pavilion Shopping Centre",
-    category: "Shopping",
-    location: "Bukit Bintang, Kuala Lumpur",
-    image: "https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?w=800&auto=format&fit=crop",
-    price: "Varies",
-    duration: "3+ hrs",
-    rating: 4.5,
-  },
-  {
-    id: "5",
-    title: "Changkat Bukit Bintang",
-    category: "Nightlife",
-    location: "Bukit Bintang, Kuala Lumpur",
-    image: "https://images.unsplash.com/photo-1566417713940-fe7c737a9ef2?w=800&auto=format&fit=crop",
-    price: "50-200",
-    duration: "3+ hrs",
-    rating: 4.4,
-  },
-  {
-    id: "6",
-    title: "Dim Sum at Dolly Dim Sum",
-    category: "Food",
-    location: "Bangsar, Kuala Lumpur",
-    image: "https://images.unsplash.com/photo-1563245372-f21724e3856d?w=800&auto=format&fit=crop",
-    price: "20-40",
-    duration: "1 hr",
-    rating: 4.7,
-  },
-];
+import { mockActivities } from "@/data/mockActivities";
 
 const Home = () => {
   const { t } = useLanguage();
-  const [selectedCategory, setSelectedCategory] = useState("All");
 
-  const filteredActivities =
-    selectedCategory === "All"
-      ? mockActivities
-      : mockActivities.filter((activity) => activity.category === selectedCategory);
+  // Group activities by category
+  const forYouActivities = mockActivities.slice(0, 3);
+  const foodActivities = mockActivities.filter((a) => a.category === "Food");
+  const activitiesCategory = mockActivities.filter((a) => a.category === "Activities");
+  const nightlifeActivities = mockActivities.filter((a) => a.category === "Nightlife");
+  const natureActivities = mockActivities.filter((a) => a.category === "Nature");
+  const shoppingActivities = mockActivities.filter((a) => a.category === "Shopping");
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-secondary/30 to-background pb-20">
-      {/* Header */}
       <header className="sticky top-0 z-40 bg-background/80 backdrop-blur-lg border-b border-border">
         <div className="max-w-screen-sm mx-auto px-4 py-4">
           <div className="flex items-center gap-2">
             <Sparkles className="h-6 w-6 text-primary" />
             <h1 className="text-2xl font-bold text-foreground">{t("header.title")}</h1>
           </div>
-          <p className="text-sm text-muted-foreground mt-1">{t("header.subtitle")}</p>
+          <p className="text-sm text-muted-foreground mt-1">
+            {t("header.subtitle")}
+          </p>
         </div>
       </header>
 
       <div className="max-w-screen-sm mx-auto px-4 py-6">
-        {/* Categories */}
-        <div className="mb-6">
-          <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-            {categories.map((category) => {
-              const key =
-                category === "All" ? "common.all" : `category.${category.toLowerCase()}`;
-              return (
-                <CategoryChip
-                  key={category}
-                  label={t(key)}
-                  active={selectedCategory === category}
-                  onClick={() => setSelectedCategory(category)}
-                />
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Activity Grid */}
-        <div className="space-y-4">
-          <h2 className="text-lg font-semibold text-foreground">
-            {selectedCategory === "All"
-              ? t("common.forYou")
-              : t(`category.${selectedCategory.toLowerCase()}`)}
-          </h2>
-          <div className="grid gap-4">
-            {filteredActivities.map((activity) => (
-              <ActivityCard key={activity.id} {...activity} />
-            ))}
-          </div>
-        </div>
+        <CategoryRow title={t("common.forYou")} activities={forYouActivities} />
+        <CategoryRow title={t("category.food")} activities={foodActivities} />
+        <CategoryRow title={t("category.activities")} activities={activitiesCategory} />
+        <CategoryRow title={t("category.nightlife")} activities={nightlifeActivities} />
+        <CategoryRow title={t("category.nature")} activities={natureActivities} />
+        <CategoryRow title={t("category.shopping")} activities={shoppingActivities} />
       </div>
     </div>
   );

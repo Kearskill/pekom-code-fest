@@ -50,6 +50,7 @@ const translations: Record<string, Record<Language, string>> = {
   'common.hours': { en: 'hours', my: 'jam' },
   'common.rating': { en: 'Rating', my: 'Penilaian' },
   'common.forYou': { en: 'For You', my: 'Untuk Anda' },
+  'common.youMayAlsoLike': { en: 'You May Also Like', my: 'Anda Juga Mungkin Suka' },
 
     // Profile Page
   'profile.title': { en: 'Profile', my: 'Profil' },
