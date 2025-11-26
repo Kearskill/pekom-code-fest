@@ -10,7 +10,6 @@ import SearchPage from "./pages/SearchPage";
 import ProfilePage from "./pages/ProfilePage";
 import NotFound from "./pages/NotFound";
 import { BottomNav } from "./components/BottomNav";
-import { LanguageToggle } from "./components/languageToggle";
 import { LanguageProvider } from "./contexts/LanguageContext";
 import { OnboardingPage, UserPreferences } from "./pages/OnboardingPage";
 
@@ -56,8 +55,6 @@ const App = () => {
           <Toaster />
           <Sonner />
           <BrowserRouter>
-            <LanguageToggle />
-
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/search" element={<SearchPage />} />
