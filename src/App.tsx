@@ -12,6 +12,7 @@ import NotFound from "./pages/NotFound";
 import { BottomNav } from "./components/BottomNav";
 import { LanguageProvider } from "./contexts/LanguageContext";
 import { OnboardingPage, UserPreferences } from "./pages/OnboardingPage";
+import ActivityDetail from "./pages/ActivityDetail";
 
 const queryClient = new QueryClient();
 
@@ -59,6 +60,7 @@ const App = () => {
               <Route path="/" element={<Home />} />
               <Route path="/search" element={<SearchPage />} />
               <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/activity/:id" element={<ActivityDetail />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
 

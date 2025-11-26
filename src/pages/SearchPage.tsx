@@ -6,6 +6,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { ActivityCard } from "@/components/ActivityCard";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Slider } from "@/components/ui/slider";
+import { mockActivities } from "@/data/mockActivities";
 
 const categoriesKeys = ["food", "activities", "nightlife", "nature", "shopping"];
 
@@ -25,42 +26,8 @@ export default function SearchPage() {
     );
   };
 
-  const mockResults = [
-  {
-    id: "1",
-    title: "Nasi Lemak at Village Park",
-    category: "Food",
-    location: "Damansara Utama, Petaling Jaya",
-    image: "https://images.unsplash.com/photo-1588137378633-dea1336ce1e2?w=800&auto=format&fit=crop",
-    price: "8-15",
-    duration: "30 min",
-    halal: true,
-    rating: 4.8,
-  },
-  {
-    id: "2",
-    title: "KL Tower Observation Deck",
-    category: "Activities",
-    location: "Kuala Lumpur City Centre",
-    image: "https://images.unsplash.com/photo-1508062878650-88b52897f298?w=800&auto=format&fit=crop",
-    price: "52",
-    duration: "2 hrs",
-    rating: 4.6,
-  },
-  {
-    id: "3",
-    title: "Batu Caves Temple",
-    category: "Nature",
-    location: "Batu Caves, Selangor",
-    image: "https://images.unsplash.com/photo-1596422846543-75c6fc197f07?w=800&auto=format&fit=crop",
-    price: "Free",
-    duration: "1-2 hrs",
-    rating: 4.7,
-  },
-];
 
-
-  const filteredResults = mockResults.filter((activity) => {
+  const filteredResults = mockActivities.filter((activity) => {
     const matchSearch =
       searchQuery === "" ||
       activity.title.toLowerCase().includes(searchQuery.toLowerCase()) ||

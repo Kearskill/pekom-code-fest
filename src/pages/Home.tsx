@@ -1,70 +1,7 @@
 import { CategoryRow } from "@/components/CategoryRow";
 import { Sparkles } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
-
-// Mock data - will be replaced with real data from backend
-const mockActivities = [
-  {
-    id: "1",
-    title: "Nasi Lemak at Village Park",
-    category: "Food",
-    location: "Damansara Utama, Petaling Jaya",
-    image: "https://images.unsplash.com/photo-1588137378633-dea1336ce1e2?w=800&auto=format&fit=crop",
-    price: "8-15",
-    duration: "30 min",
-    rating: 4.8,
-  },
-  {
-    id: "2",
-    title: "KL Tower Observation Deck",
-    category: "Activities",
-    location: "Kuala Lumpur City Centre",
-    image: "https://images.unsplash.com/photo-1508062878650-88b52897f298?w=800&auto=format&fit=crop",
-    price: "52",
-    duration: "2 hrs",
-    rating: 4.6,
-  },
-  {
-    id: "3",
-    title: "Batu Caves Temple",
-    category: "Nature",
-    location: "Batu Caves, Selangor",
-    image: "https://images.unsplash.com/photo-1596422846543-75c6fc197f07?w=800&auto=format&fit=crop",
-    price: "Free",
-    duration: "1-2 hrs",
-    rating: 4.7,
-  },
-  {
-    id: "4",
-    title: "Pavilion Shopping Centre",
-    category: "Shopping",
-    location: "Bukit Bintang, Kuala Lumpur",
-    image: "https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?w=800&auto=format&fit=crop",
-    price: "Varies",
-    duration: "3+ hrs",
-    rating: 4.5,
-  },
-  {
-    id: "5",
-    title: "Changkat Bukit Bintang",
-    category: "Nightlife",
-    location: "Bukit Bintang, Kuala Lumpur",
-    image: "https://images.unsplash.com/photo-1566417713940-fe7c737a9ef2?w=800&auto=format&fit=crop",
-    price: "50-200",
-    duration: "3+ hrs",
-    rating: 4.4,
-  },
-  {
-    id: "6",
-    title: "Dim Sum at Dolly Dim Sum",
-    category: "Food",
-    location: "Bangsar, Kuala Lumpur",
-    image: "https://images.unsplash.com/photo-1563245372-f21724e3856d?w=800&auto=format&fit=crop",
-    price: "20-40",
-    duration: "1 hr",
-    rating: 4.7,
-  },
-];
+import { mockActivities } from "@/data/mockActivities";
 
 const Home = () => {
   const { t } = useLanguage();

@@ -1,5 +1,6 @@
 import { MapPin, DollarSign, Clock } from "lucide-react";
 import { Badge } from "./ui/badge";
+import { useNavigate } from "react-router-dom";
 
 interface ActivityCardProps {
   id: string;
@@ -21,6 +22,7 @@ const categoryColors: Record<string, string> = {
 };
 
 export const ActivityCard = ({
+  id,
   title,
   category,
   location,
@@ -29,29 +31,45 @@ export const ActivityCard = ({
   duration,
   rating,
 }: ActivityCardProps) => {
+  const navigate = useNavigate();
+
+  const openDetail = () => {
+    navigate(`/activity/${id}`, {
+      state: { id, title, category, location, image, price, duration, rating },
+    });
+  };
+
   return (
-    <div className="bg-card rounded-2xl overflow-hidden shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-card-hover)] transition-[shadow] duration-300">
+    <div
+      onClick={openDetail}
+      className="bg-card rounded-2xl overflow-hidden shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-card-hover)] transition-[shadow] duration-300 cursor-pointer"
+    >
       <div className="relative h-48 overflow-hidden">
         <img
           src={image}
           alt={title}
           className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
         />
-        <Badge className={`absolute top-3 left-3 ${categoryColors[category.toLowerCase()] || "bg-primary/10 text-primary border-primary/20"}`}>
+        <Badge
+          className={`absolute top-3 left-3 ${
+            categoryColors[category.toLowerCase()] ||
+            "bg-primary/10 text-primary border-primary/20"
+          }`}
+        >
           {category}
         </Badge>
       </div>
-      
+
       <div className="p-4">
         <h3 className="font-semibold text-lg text-card-foreground mb-2 line-clamp-1">
           {title}
         </h3>
-        
+
         <div className="flex items-center text-muted-foreground text-sm mb-3">
           <MapPin className="h-4 w-4 mr-1" />
           <span className="line-clamp-1">{location}</span>
         </div>
-        
+
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="flex items-center text-sm font-medium text-foreground">
