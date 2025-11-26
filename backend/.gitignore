@@ -1,0 +1,59 @@
+# -----------------------------
+# Python
+# -----------------------------
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pkl
+*.sqlite3
+*.db
+
+# C Extensions
+*.so
+
+# Virtual Environment
+venv/
+env/
+.venv/
+
+# Jupyter notebooks checkpoints
+.ipynb_checkpoints/
+
+# PyTest
+.cache/
+pytest_cache/
+
+# VSCode
+.vscode/
+
+# MacOS / Windows system files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Environment variables
+.env
+*.env
+
+# MyPy / Type checking
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Coverage
+htmlcov/
+.coverage
+.coverage.*
+.cache
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+*.egg
+
+# FastAPI static & generated files
+staticfiles/
