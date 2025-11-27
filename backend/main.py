@@ -11,7 +11,7 @@ import os
 load_dotenv()
 
 # Import routers
-from routers import search, itinerary, recommendations
+from .routers import search, itinerary, recommendations
 
 # Create FastAPI app
 app = FastAPI(

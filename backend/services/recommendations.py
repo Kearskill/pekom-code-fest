@@ -87,6 +87,6 @@ def get_recommendations(
     
     # Remove score from response (internal only)
     for place in scores:
-        del place["score"]
+        place.pop("score", None)
     
     return scores[:top_n]

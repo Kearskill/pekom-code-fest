@@ -15,8 +15,8 @@ from ..models.schemas import (
     ItineraryActivity, 
     ReasoningChain
 )
-from ..services.jamai_client import jamai_client
-from ..services.utils import enrich_itinerary_activity  # Import enrichment
+from backend.services.jamai_client import jamai_client
+from backend.services.utils import enrich_itinerary_activity
 
 router = APIRouter(prefix="/api/itinerary", tags=["Trip Planner"])
 
@@ -69,16 +69,17 @@ async def generate_itinerary(request: ItineraryRequest):
         # Format reasoning chain (for judges to see)
         reasoning = ReasoningChain(
             step1_parse=result["reasoning_chain"].get("step1_parse", ""),
-            step2_morning=result["reasoning_chain"].get("step2_morning", ""),
-            step3_lunch=result["reasoning_chain"].get("step3_lunch", ""),
-            step4_afternoon=result["reasoning_chain"].get("step4_afternoon", ""),
-            step5_validate=result["reasoning_chain"].get("step5_validate", ""),
-            step6_final=result["reasoning_chain"].get("step6_final", "")
+            step2_breakfast=result["reasoning_chain"].get("step2_breakfast", ""),
+            step3_morning=result["reasoning_chain"].get("step3_morning", ""),
+            step4_lunch=result["reasoning_chain"].get("step4_lunch", ""),
+            step5_afternoon=result["reasoning_chain"].get("step5_afternoon", ""),
+            step6_dinner=result["reasoning_chain"].get("step6_dinner", ""),
+            step7_validate=result["reasoning_chain"].get("step7_validate", ""),
+            step8_final=result["reasoning_chain"].get("step8_final", "")
         )
         
         return ItineraryResponse(
             itinerary=itinerary_activities,
-            summary=result.get("summary", ""),
             transport_notes=result.get("transport_notes", ""),
             reasoning_chain=reasoning
         )
