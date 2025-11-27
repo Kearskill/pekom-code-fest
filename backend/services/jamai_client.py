@@ -15,11 +15,29 @@ load_dotenv()
 # ============================================
 # CORRECT IMPORT - use 'types as t' not 'protocol as p'
 # ============================================
+from typing import TYPE_CHECKING
+import importlib
+import importlib.util
+from collections import defaultdict
+
+# Allow type-checkers to see the jamaibase types without forcing a static import at runtime
+if TYPE_CHECKING:
+    from jamaibase import JamAI, types as t  # type: ignore
+
+# Dynamically load jamaibase if available to avoid static "module not found" errors in editors
 try:
-    from jamaibase import JamAI, types as t
-    JAMAI_AVAILABLE = True
-except ImportError:
+    spec = importlib.util.find_spec("jamaibase")
+    if spec is not None:
+        jamaibase = importlib.import_module("jamaibase")
+        JamAI = getattr(jamaibase, "JamAI", None)
+        t = getattr(jamaibase, "types", None)
+        JAMAI_AVAILABLE = True if JamAI and t else False
+    else:
+        JAMAI_AVAILABLE = False
+except Exception:
     JAMAI_AVAILABLE = False
+
+if not JAMAI_AVAILABLE:
     print("Warning: jamaibase not installed. Run: pip install jamaibase")
 
 
@@ -66,7 +84,7 @@ class JamAIClient:
         
         # Initialize client
         self.client = JamAI(project_id=project_id, token=api_key)
-        self.action_table_id = "TripPlanner"
+        self.action_table_id = "Trip Planner"
     
     def generate_itinerary(
         self,
@@ -136,15 +154,17 @@ class JamAIClient:
         
         # Extract all 6 step outputs
         step1_parse = _safe_text(cols.get("step1_parse"))
-        step2_morning = _safe_text(cols.get("step2_morning"))
-        step3_lunch = _safe_text(cols.get("step3_lunch"))
-        step4_afternoon = _safe_text(cols.get("step4_afternoon"))
-        step5_validate = _safe_text(cols.get("step5_validate"))
-        step6_final = _safe_text(cols.get("step6_final"))
+        step2_breakfast = _safe_text(cols.get("step2_breakfast"))
+        step3_morning = _safe_text(cols.get("step3_morning"))
+        step4_lunch = _safe_text(cols.get("step4_lunch"))
+        step5_afternoon = _safe_text(cols.get("step5_afternoon"))
+        step6_dinner = _safe_text(cols.get("step6_dinner"))
+        step7_validate = _safe_text(cols.get("step7_validate"))
+        step8_final = _safe_text(cols.get("step8_final"))
         
         # Parse final JSON output
         try:
-            itinerary_json = json.loads(step6_final)
+            itinerary_json = json.loads(step8_final)
         except json.JSONDecodeError:
             # Fallback if LLM didn't produce valid JSON
             itinerary_json = {
@@ -159,11 +179,13 @@ class JamAIClient:
             "transport_notes": itinerary_json.get("transport_notes", ""),
             "reasoning_chain": {
                 "step1_parse": step1_parse,
-                "step2_morning": step2_morning,
-                "step3_lunch": step3_lunch,
-                "step4_afternoon": step4_afternoon,
-                "step5_validate": step5_validate,
-                "step6_final": step6_final
+                "step2_breakfast": step2_breakfast,
+                "step3_morning": step3_morning,
+                "step4_lunch": step4_lunch,
+                "step5_afternoon": step5_afternoon,
+                "step6_dinner": step6_dinner,
+                "step7_validate": step7_validate,
+                "step8_final": step8_final
             }
         }
     
@@ -201,11 +223,13 @@ class JamAIClient:
         # Accumulate streamed text per column
         accumulated = {
             "step1_parse": "",
-            "step2_morning": "",
-            "step3_lunch": "",
-            "step4_afternoon": "",
-            "step5_validate": "",
-            "step6_final": ""
+            "step2_breakfast": "",
+            "step3_morning": "",
+            "step4_lunch": "",
+            "step5_afternoon": "",
+            "step6_dinner": "",
+            "step7_validate": "",
+            "step8_final": ""
         }
         
         # Stream response
@@ -220,20 +244,21 @@ class JamAIClient:
         
         # Parse final JSON
         try:
-            itinerary_json = json.loads(accumulated["step6_final"])
+            itinerary_json = json.loads(accumulated["step8_final"])
         except json.JSONDecodeError:
-            itinerary_json = {
-                "itinerary": [],
-                "summary": "Error parsing itinerary",
-                "transport_notes": ""
-            }
-        
+            print("[jamai_client] Warning: failed to parse final JSON from streaming; final_key=", accumulated["step8_final"])
+            itinerary_json = {"itinerary": [], "summary": "Error parsing itinerary", "transport_notes": ""}
+
+        # Convert accumulated (defaultdict) to a plain dict for return
+        reasoning_chain = dict(accumulated)
+
         return {
             "itinerary": itinerary_json.get("itinerary", []),
-            "summary": itinerary_json.get("summary", ""),
+            # "summary": itinerary_json.get("summary", ""),
             "transport_notes": itinerary_json.get("transport_notes", ""),
-            "reasoning_chain": accumulated
+            "reasoning_chain": reasoning_chain  # instead of accumulated
         }
+           
 
 
 # ============================================

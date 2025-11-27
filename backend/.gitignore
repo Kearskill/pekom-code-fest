@@ -57,3 +57,4 @@ dist/
 
 # FastAPI static & generated files
 staticfiles/
+
