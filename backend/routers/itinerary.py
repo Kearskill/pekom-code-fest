@@ -15,8 +15,8 @@ from ..models.schemas import (
     ItineraryActivity, 
     ReasoningChain
 )
-from backend.services.jamai_client import jamai_client
-from backend.services.utils import enrich_itinerary_activity
+from services.jamai_client import jamai_client
+from services.utils import enrich_itinerary_activity
 
 router = APIRouter(prefix="/api/itinerary", tags=["TripPlanner"])
 

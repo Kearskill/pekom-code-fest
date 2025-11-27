@@ -12,9 +12,6 @@ from dotenv import load_dotenv
 load_dotenv()
 print(f"API Key found: {'Yes' if os.getenv('JAMAI_API_KEY') else 'No'}")
 
-# Import routers
-from .routers import search, itinerary, recommendations
-
 # Create FastAPI app
 app = FastAPI(
     title="Malaysian Tourism API",
@@ -33,6 +30,7 @@ app.add_middleware(
         "http://localhost:3000",
         "http://localhost:8080"
         
+        "http://localhost:8080",
     ],
     allow_credentials=True,
     allow_methods=["*"],
