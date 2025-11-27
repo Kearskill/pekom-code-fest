@@ -9,7 +9,7 @@ from fastapi.responses import StreamingResponse
 import json
 from typing import AsyncGenerator
 
-from models.schemas import (
+from ..models.schemas import (
     ItineraryRequest, 
     ItineraryResponse, 
     ItineraryActivity, 
