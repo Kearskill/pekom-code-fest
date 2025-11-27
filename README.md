@@ -3,6 +3,10 @@
 Welcome to our **Learn and Hustle** project for the **PEKOM Code Fest Hackathon**
 ## Project Info
 
+## Slides and Video demo
+[Slides](Slidesfinal.pdf)  
+[VideoDemo](https://youtu.be/Yo0_Y0-PbY8)
+
 ## Running the Project Locally
 
 To run this project on your machine, just follow these steps:
