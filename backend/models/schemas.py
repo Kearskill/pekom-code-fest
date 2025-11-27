@@ -107,10 +107,10 @@ class PlaceResponse(BaseModel):
 
 class ItineraryActivity(BaseModel):
     """Single activity in itinerary - enriched with full place data"""
-    time: str
-    place: str
-    type: str
-    reasoning: str
+    time: Optional[str] = None
+    place: Optional[str] = None
+    type: Optional[str] = None
+    reasoning: Optional[str] = None
     # Enriched fields (looked up from CSV after RAG)
     image_url: Optional[str] = None
     address: Optional[str] = None
@@ -123,20 +123,29 @@ class ItineraryActivity(BaseModel):
 
 
 class ReasoningChain(BaseModel):
-    """Multi-step reasoning chain for judges"""
-    step1_parse: str
-    step2_morning: str
-    step3_lunch: str
-    step4_afternoon: str
-    step5_validate: str
-    step6_final: str
+    """
+    Multi-step reasoning chain for judges.
+    All fields Optional to prevent crashes if JamAI skips a step.
+    """
+    step1_parse: Optional[str] = None
+    step2_breakfast: Optional[str] = None
+    step2_morning: Optional[str] = None  # Kept just in case
+    step3_morning: Optional[str] = None
+    step3_lunch: Optional[str] = None    # Kept just in case
+    step4_lunch: Optional[str] = None
+    step4_afternoon: Optional[str] = None # Kept just in case
+    step5_afternoon: Optional[str] = None
+    step5_dinner: Optional[str] = None    # Kept just in case
+    step6_dinner: Optional[str] = None
+    step7_validate: Optional[str] = None
+    step8_final: Optional[str] = None
 
 
 class ItineraryResponse(BaseModel):
     """Response model for generated itinerary"""
     itinerary: List[ItineraryActivity]
-    summary: str
-    transport_notes: str
+    summary: Optional[str] = None  # Made Optional because router doesn't return it
+    transport_notes: Optional[str] = None
     reasoning_chain: ReasoningChain
 
 

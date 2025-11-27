@@ -12,40 +12,38 @@ router = APIRouter(prefix="/api/search", tags=["Search"])
 
 @router.get("", response_model=SearchResponse)
 async def search(
-    place_type: str = Query("All", description="Food / Tourist Spot / All"),
-    price_range: str = Query("All", description="Budget / Medium / Premium / All"),
-    halal_status: str = Query("No preference", description="Halal only / No preference"),
-    accessibility: str = Query("No preference", description="Wheelchair-friendly / No preference"),
-    search_query: str = Query("", description="Free text search"),
-    filter_open_now: bool = Query(False, description="Only show places open now")
+    place_type: str = Query("All"),
+    price_range: str = Query("All"),
+    halal_status: str = Query("No preference"),
+    accessibility: str = Query("No preference"),
+    search_query: str = Query(""),
+    filter_open_now: bool = Query(False)
 ):
-    """
-    Search and filter places.
-    
-    This endpoint uses pure Python/Pandas for fast, deterministic filtering.
-    No AI involved - instant results.
-    """
-    results = search_places(
-        place_type=place_type,
-        price_range=price_range,
-        halal_status=halal_status,
-        accessibility=accessibility,
-        search_query=search_query,
-        filter_open_now=filter_open_now
-    )
-    
-    return SearchResponse(
-        results=[PlaceResponse(**r) for r in results],
-        total_count=len(results),
-        filters_applied={
-            "place_type": place_type,
-            "price_range": price_range,
-            "halal_status": halal_status,
-            "accessibility": accessibility,
-            "search_query": search_query,
-            "filter_open_now": filter_open_now
-        }
-    )
+    try:
+        results = search_places(
+            place_type=place_type,
+            price_range=price_range,
+            halal_status=halal_status,
+            accessibility=accessibility,
+            search_query=search_query,
+            filter_open_now=filter_open_now
+        )
+        return SearchResponse(
+            results=[PlaceResponse(**r) for r in results],
+            total_count=len(results),
+            filters_applied={
+                "place_type": place_type,
+                "price_range": price_range,
+                "halal_status": halal_status,
+                "accessibility": accessibility,
+                "search_query": search_query,
+                "filter_open_now": filter_open_now
+            }
+        )
+    except Exception as e:
+        print("Error in search endpoint:", e)
+        raise e
+
 
 
 @router.post("", response_model=SearchResponse)

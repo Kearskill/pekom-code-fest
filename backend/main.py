@@ -9,6 +9,7 @@ import os
 
 # Load environment variables
 load_dotenv()
+print(f"API Key found: {'Yes' if os.getenv('JAMAI_API_KEY') else 'No'}")
 
 # Import routers
 from .routers import search, itinerary, recommendations

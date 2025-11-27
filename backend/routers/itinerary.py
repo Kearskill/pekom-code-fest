@@ -18,7 +18,7 @@ from ..models.schemas import (
 from backend.services.jamai_client import jamai_client
 from backend.services.utils import enrich_itinerary_activity
 
-router = APIRouter(prefix="/api/itinerary", tags=["Trip Planner"])
+router = APIRouter(prefix="/api/itinerary", tags=["TripPlanner"])
 
 
 @router.post("", response_model=ItineraryResponse)

@@ -6,42 +6,52 @@ No JamAI dependencies - pure Python logic
 import pandas as pd
 from datetime import datetime, time
 import re
-from typing import Optional, List, Dict
+from typing import Optional, List, Dict, Any
 import os
+from functools import lru_cache
 
 # Get the data directory path
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data")
 
+# Global cache variable
+_DF_CACHE = None
 
 def load_data() -> pd.DataFrame:
     """
-    Load the tourism data.
-    Supports both CSV and Parquet formats.
+    Load the tourism data with caching to prevent re-reading disk.
     """
+    global _DF_CACHE
+    if _DF_CACHE is not None:
+        return _DF_CACHE
+
     csv_path = os.path.join(DATA_DIR, "combine_new.csv")
     parquet_path = os.path.join(DATA_DIR, "combined.parquet")
     
-    # Try CSV first (your actual data file)
-    if os.path.exists(csv_path):
-        return pd.read_csv(csv_path)
-    elif os.path.exists(parquet_path):
-        return pd.read_parquet(parquet_path)
+    if os.path.exists(parquet_path):
+        _DF_CACHE = pd.read_parquet(parquet_path)
+    elif os.path.exists(csv_path):
+        _DF_CACHE = pd.read_csv(csv_path)
     else:
         raise FileNotFoundError(
             f"No data file found. Place combine_new.csv or combined.parquet in {DATA_DIR}"
         )
-
+    
+    # Standardize column names to avoid key errors later
+    # _DF_CACHE.columns = _DF_CACHE.columns.str.strip() 
+    return _DF_CACHE
 
 def parse_time(time_str: str) -> Optional[time]:
     """Convert time string to datetime.time object"""
+    if not isinstance(time_str, str):
+        return None
+    time_str = time_str.strip().upper()
     try:
-        return datetime.strptime(time_str.strip(), "%H:%M").time()
-    except:
+        return datetime.strptime(time_str, "%H:%M").time()
+    except ValueError:
         try:
-            return datetime.strptime(time_str.strip(), "%I:%M %p").time()
-        except:
+            return datetime.strptime(time_str, "%I:%M %p").time()
+        except ValueError:
             return None
-
 
 def is_open_now(opening_hours_str: str, check_time: Optional[str] = None) -> bool:
     """Check if a place is open at given time"""
@@ -50,170 +60,173 @@ def is_open_now(opening_hours_str: str, check_time: Optional[str] = None) -> boo
     
     opening_hours_str = str(opening_hours_str).strip()
     
-    if "24/7" in opening_hours_str or "24 hours" in opening_hours_str.lower():
+    if "24/7" in opening_hours_str or "24 HOURS" in opening_hours_str.upper():
         return True
     
+    # Handle check_time
     if check_time is None:
+        # WARNING: This uses server time. Ideally, pass a timezone-aware time from the frontend.
         check_time_obj = datetime.now().time()
     else:
         check_time_obj = parse_time(check_time)
         if check_time_obj is None:
             return False
     
-    pattern = r'(\d{1,2}:\d{2})\s*-\s*(\d{1,2}:\d{2})'
-    match = re.search(pattern, opening_hours_str)
+    # Regex improved to be slightly more lenient with spaces
+    pattern = r'(\d{1,2}:\d{2})\s*(?:-|to)\s*(\d{1,2}:\d{2})'
+    match = re.search(pattern, opening_hours_str, re.IGNORECASE)
     
     if match:
         open_time = parse_time(match.group(1))
         close_time = parse_time(match.group(2))
         
         if open_time and close_time:
-            if close_time < open_time:
+            if close_time < open_time: # Crosses midnight (e.g. 18:00 - 02:00)
                 return check_time_obj >= open_time or check_time_obj <= close_time
-            else:
+            else: # Standard day (e.g. 09:00 - 17:00)
                 return open_time <= check_time_obj <= close_time
     
     return False
 
-
 def is_wheelchair_accessible(accessibility_info: str) -> bool:
-    """Check if place is wheelchair accessible"""
     if pd.isna(accessibility_info):
         return False
     
-    accessibility_info = str(accessibility_info).lower()
+    info = str(accessibility_info).lower()
     
-    negative_keywords = [
-        'not wheelchair accessible', 'no wheelchair access',
-        'limited access', 'stairs only', 'no ramps', 'no elevator'
-    ]
-    
-    for keyword in negative_keywords:
-        if keyword in accessibility_info:
-            return False
-    
-    positive_keywords = [
-        'wheelchair accessible', 'wheelchair-friendly', 'wheelchair friendly',
-        'ramps available', 'elevator available', 'lift access', 'accessible entrance'
-    ]
-    
-    for keyword in positive_keywords:
-        if keyword in accessibility_info:
-            return True
-    
-    return False
-
+    # Check negatives first
+    if any(x in info for x in ['not wheelchair', 'no wheelchair', 'stairs only', 'no elevator']):
+        return False
+        
+    # Check positives
+    positive_keywords = ['wheelchair', 'ramp', 'lift', 'elevator', 'accessible']
+    return any(x in info for x in positive_keywords)
 
 def matches_halal_requirement(place_halal_status: str, user_requirement: str) -> bool:
-    """Check if place matches user's halal requirement"""
-    if user_requirement == "No preference":
+    if not user_requirement or user_requirement == "No preference":
         return True
     
     if pd.isna(place_halal_status):
         return False
     
-    place_halal_status = str(place_halal_status).strip()
-    return place_halal_status in ["Halal", "Muslim-Friendly"]
-
+    status = str(place_halal_status).strip().lower()
+    return status in ["halal", "muslim-friendly"]
 
 def extract_price_min(price_str: str) -> int:
-    """Extract minimum price from price range string"""
     if pd.isna(price_str):
         return 999999
     
-    price_str = str(price_str).upper().strip()
-    
-    if "FREE" in price_str:
+    p_str = str(price_str).upper().strip()
+    if "FREE" in p_str:
         return 0
     
-    numbers = re.findall(r'\d+', price_str)
+    # Extract all numbers, take the first one found
+    numbers = re.findall(r'\d+', p_str)
     if numbers:
         return int(numbers[0])
     
     return 999999
 
-
-def format_place_response(row: pd.Series) -> Dict:
-    """Format a DataFrame row into API response format"""
-    return {
-        "name": row.get("Name", ""),
-        "type": row.get("Type", ""),
-        "image_url": row.get("Image_URL"),  # GitHub raw URL
-        "category": row.get("Category"),
-        "cuisine": row.get("Cuisine"),
-        "price_range": row.get("Price_Range"),
-        "halal_status": row.get("Halal_Status"),
-        "address": row.get("Address"),
-        "opening_hours": row.get("Opening_Hours"),
-        "is_open_now": is_open_now(row.get("Opening_Hours", "")),
-        "description": row.get("Description"),
-        "accessibility_info": row.get("Accessibility_Info"),
-        "is_wheelchair_accessible": is_wheelchair_accessible(row.get("Accessibility_Info", "")),
-        "how_to_get_there": row.get("Public_Transport"),
-        "contact": row.get("Contact_Website"),
-        "famous_for": row.get("Famous_Dish"),
-        "ticket_price": row.get("Ticket_Price_Breakdown"),
+def format_place_response(row: pd.Series) -> Dict[str, Any]:
+    """
+    Formats the row into a dictionary.
+    """
+    # Map CSV column names to output JSON keys
+    field_mapping = {
+        "Name": "name",
+        "Type": "type",  # <--- CHANGED: Was "place_type", now "type" to match Pydantic
+        "Description": "description",
+        "Category": "category",
+        "Contact": "contact",
+        "Ticket_Price": "ticket_price",
+        "Price_Range": "price_range",
+        "Halal_Status": "halal_status",
+        "Accessibility_Info": "accessibility_info",
+        "Open_Now": "open_now",
+        "Image_URL": "image_url",
+        "Address": "address",
+        "How_to_Get_There": "how_to_get_there",
+        "Opening_Hours": "opening_hours"
     }
+    
+    result = {}
+    for col_name, output_key in field_mapping.items():
+        val = row.get(col_name)
+        # Convert NaN to empty string/None for JSON safety
+        if pd.isna(val):
+            result[output_key] = None
+        else:
+            result[output_key] = str(val)
 
+    # Handle the computed Open_Now if it exists in the row, otherwise default false
+    if "open_now" not in result:
+        result["open_now"] = False
+        
+    return result
+    
+    result = {}
+    for col_name, output_key in field_mapping.items():
+        val = row.get(col_name)
+        # Convert NaN to empty string/None for JSON safety
+        if pd.isna(val):
+            result[output_key] = None
+        else:
+            result[output_key] = str(val)
+
+    # Handle the computed Open_Now if it exists in the row, otherwise default false
+    if "open_now" not in result:
+        result["open_now"] = False
+        
+    return result
 
 def lookup_place_by_name(place_name: str) -> Optional[Dict]:
-    """
-    Look up a place by name and return full data including image_url.
-    
-    Used to ENRICH itinerary results from JamAI with full data.
-    JamAI only returns place names - we need to look up images, addresses, etc.
-    
-    Args:
-        place_name: Name of the place (e.g., "Batu Caves")
-    
-    Returns:
-        Full place data dict or None if not found
-    """
+    """Look up a place by name."""
     df = load_data()
     
-    # Exact match first
-    match = df[df["Name"].str.lower() == place_name.lower()]
+    if not place_name:
+        return None
+
+    # Lowercase search for case-insensitive matching
+    place_name_lower = place_name.lower().strip()
     
-    # Fuzzy match if exact fails (handles "Batu Caves" vs "Batu Caves Temple")
+    # Create a lowercased series for comparison to avoid re-computing it
+    # (In high perf scenarios, cache the lowercased name column too)
+    names_lower = df["Name"].astype(str).str.lower()
+    
+    # 1. Exact Match
+    match = df[names_lower == place_name_lower]
+    
+    # 2. Contains Match (Fuzzy) if exact fails
     if match.empty:
-        match = df[df["Name"].str.lower().str.contains(place_name.lower(), na=False)]
+        match = df[names_lower.str.contains(place_name_lower, regex=False)]
     
     if not match.empty:
+        # Return the first match
         return format_place_response(match.iloc[0])
     
     return None
 
-
 def enrich_itinerary_activity(activity: Dict) -> Dict:
     """
     Enrich an itinerary activity with full place data.
-    
-    Args:
-        activity: {"time": "09:00", "place": "Batu Caves", "type": "Tourist Spot", "reasoning": "..."}
-    
-    Returns:
-        Activity dict with added image_url, address, etc.
     """
     place_name = activity.get("place", "")
     place_data = lookup_place_by_name(place_name)
     
-    enriched = {
-        "time": activity.get("time", ""),
-        "place": place_name,
-        "type": activity.get("type", ""),
-        "reasoning": activity.get("reasoning", ""),
-    }
+    # Start with existing activity data
+    enriched = activity.copy()
     
     if place_data:
-        enriched.update({
-            "image_url": place_data.get("image_url"),
-            "address": place_data.get("address"),
-            "opening_hours": place_data.get("opening_hours"),
-            "price_range": place_data.get("price_range"),
-            "halal_status": place_data.get("halal_status"),
-            "description": place_data.get("description"),
-            "accessibility_info": place_data.get("accessibility_info"),
-            "how_to_get_there": place_data.get("how_to_get_there"),
-        })
-    
+        # Safely update using data from DB
+        # Only overwrite if the DB has data (not None)
+        fields_to_enrich = [
+            "image_url", "address", "opening_hours", 
+            "price_range", "halal_status", "description", 
+            "accessibility_info", "how_to_get_there"
+        ]
+        
+        for field in fields_to_enrich:
+            if place_data.get(field):
+                enriched[field] = place_data[field]
+                
     return enriched

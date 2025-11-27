@@ -84,7 +84,7 @@ class JamAIClient:
         
         # Initialize client
         self.client = JamAI(project_id=project_id, token=api_key)
-        self.action_table_id = "Trip Planner"
+        self.action_table_id ="TripPlanner"
     
     def generate_itinerary(
         self,
