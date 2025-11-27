@@ -52,11 +52,10 @@ export const ActivityCard = ({
         />
         <Badge
           className={`absolute top-3 left-3 ${
-            categoryColors[category.toLowerCase()] ||
-            "bg-primary/10 text-primary border-primary/20"
+            categoryColors[category?.toLowerCase() || ""] || "bg-primary/10 text-primary border-primary/20"
           }`}
         >
-          {category}
+          {category || "Unknown"}
         </Badge>
       </div>
 

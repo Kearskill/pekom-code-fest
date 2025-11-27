@@ -77,11 +77,18 @@ export const CategoryRow = ({ title, activities }: CategoryRowProps) => {
             ref={scrollRef}
             className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory"
         >
-            {activities.map((activity) => (
-            <div key={activity.id} className="flex-none w-[280px] snap-start">
-                <ActivityCard {...activity} />
-            </div>
-            ))}
+          {activities.map((activity, index) => (
+        <div
+            key={activity.id || `${activity.title}-${index}`}
+            className="flex-none w-[280px] snap-start"
+        >
+            <ActivityCard
+            {...activity}
+            category={activity.category || "Unknown"}
+            duration={activity.duration || undefined}
+            />
+        </div>
+        ))}
         </div>
         </div>
     );
