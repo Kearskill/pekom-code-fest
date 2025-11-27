@@ -29,8 +29,16 @@ npm i
 # Start the frontend (Vite)
 npm run dev
 
-# In a separate terminal: start the backend (Express)
-npm run server
+# In a separate terminal: start the backend (FastAPI)
+cd backend
+
+python -m venv venv # Create a new virtual environment
+
+venv\Scripts\activate #Run the virtual environment (Windows)
+
+pip install -r requirements.txt # install all packages for this venv
+
+python main.py # run the server
 
 ## Technologies Used
 

@@ -16,6 +16,7 @@ __pycache__/
 venv/
 env/
 .venv/
+backend\.env
 
 # Jupyter notebooks checkpoints
 .ipynb_checkpoints/
@@ -57,3 +58,4 @@ dist/
 
 # FastAPI static & generated files
 staticfiles/
+
