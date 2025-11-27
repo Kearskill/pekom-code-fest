@@ -4,8 +4,8 @@ Recommendations endpoint router
 
 from fastapi import APIRouter
 from datetime import datetime
-from ..models.schemas import RecommendationsRequest, RecommendationsResponse, PlaceResponse
-from ..services.recommendations import get_recommendations
+from models.schemas import RecommendationsRequest, RecommendationsResponse, PlaceResponse
+from services.recommendations import get_recommendations
 
 router = APIRouter(prefix="/api/recommendations", tags=["Recommendations"])
 

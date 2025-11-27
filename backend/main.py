@@ -1,17 +1,18 @@
 """
 Malaysian Tourism App - FastAPI Backend
 """
-
+import os
+from routers import search, itinerary, recommendations
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
-import os
+
 
 # Load environment variables
 load_dotenv()
 
 # Import routers
-from routers import search, itinerary, recommendations
+
 
 # Create FastAPI app
 app = FastAPI(

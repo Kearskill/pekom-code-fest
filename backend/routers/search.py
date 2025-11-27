@@ -4,8 +4,9 @@ Search endpoint router
 
 from fastapi import APIRouter, Query
 from typing import Optional
-from ..models.schemas import SearchRequest, SearchResponse, PlaceResponse
-from ..services.search_feature import search_places
+from models.schemas import SearchRequest, SearchResponse, PlaceResponse
+
+from services.search_feature import search_places
 
 router = APIRouter(prefix="/api/search", tags=["Search"])
 

@@ -9,14 +9,14 @@ from fastapi.responses import StreamingResponse
 import json
 from typing import AsyncGenerator
 
-from ..models.schemas import (
+from models.schemas import (
     ItineraryRequest, 
     ItineraryResponse, 
     ItineraryActivity, 
     ReasoningChain
 )
-from ..services.jamai_client import jamai_client
-from ..services.utils import enrich_itinerary_activity  # Import enrichment
+from services.jamai_client import jamai_client
+from services.utils import enrich_itinerary_activity  # Import enrichment
 
 router = APIRouter(prefix="/api/itinerary", tags=["Trip Planner"])
 
